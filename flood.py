@@ -1,5 +1,4 @@
 import random
-import Tkinter
 
 class FloodFill:
     colors=["red", "blue", "green", "yellow", "purple", "orange"]
@@ -10,25 +9,28 @@ class FloodFill:
     lastcolor = ''
     maxturn = 1
     turn = 0
+    window = None
     game=True
 
     def __init__(self):
         print("Flood Fill Game")
         self.size = 0
-        while not self.size:
-            trysize = raw_input("How big do you want the board? (6 or higher): ")
-            if trysize.isdigit():
-                if int(trysize) >= 6:
-                    self.size = int(trysize)
-                    self.maxturn = int(round((1.75*self.size) + ((2**self.size)/(self.size**2))))
         self.game=True
         self.board=[]
         self.turn=0
         self.boardString=''
         self.lastcolor = ''
+        while not self.size:
+            self.getSize()
         self.popBoard()
         self.getInput()
 
+    def getSize(self):
+        trysize = raw_input("How big do you want the board? (6 or higher): ")
+        if trysize.isdigit():
+            if int(trysize) >= 6:
+                self.size = int(trysize)
+                self.maxturn = int(round(2.5*self.size))
 
     def getInput(self):
         feedback = ''
@@ -53,15 +55,20 @@ class FloodFill:
                         color = self.colorvals[c]
             elif action in self.colorvals:
                 color = action
+            elif action in 'check' or action == ' ':
+                color = 'check'
             else:
                 feedback = "Please type one of the following; "
                 for cl in self.colors: feedback+=cl+' '
             if color:
-                if color != self.lastcolor:
-                    self.turn+=1
-                self.flood(color, self.board[0][0], [])
-                self.lastcolor = color
-                feedback += "Filled " + str(next(cl for cl in self.colors if cl[0]==color))
+                if color == 'check':
+                    self.flood(" ", self.board[0][0], [])
+                else:
+                    if color != self.lastcolor:
+                        self.turn+=1
+                    self.flood(color, self.board[0][0], [])
+                    self.lastcolor = color
+                    feedback += "Filled " + str(next(cl for cl in self.colors if cl[0]==color))
             if self.checkWin():
                 self.game=False
                 feedback += '\nYou Win! \nPlay again? (Yes/No)'
