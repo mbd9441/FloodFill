@@ -1,28 +1,35 @@
 import random
+import copy
 
 class FloodFill:
     colors=["red", "blue", "green", "yellow", "purple", "orange"]
     colorvals=['r','b','g','y','p','o']
     board = []
+    lastboard = []
     size = 0
     boardString = ''
     lastcolor = ''
     maxturn = 1
     turn = 0
-    window = None
-    game=True
+    replay = False
+    game = True
 
     def __init__(self):
-        print("Flood Fill Game")
-        self.size = 0
-        self.game=True
+        print('Flood Fill Game')
+        self.game = True
         self.board=[]
         self.turn=0
-        self.boardString=''
+        self.boardString = ''
         self.lastcolor = ''
-        while not self.size:
-            self.getSize()
-        self.popBoard()
+        if self.replay:
+            self.board = copy.deepcopy(self.lastboard)
+            self.replay = False
+        else:
+            self.size = 0
+            while not self.size:
+                self.getSize()
+            self.popBoard()
+            self.lastboard = copy.deepcopy(self.board)
         self.getInput()
 
     def getSize(self):
@@ -71,18 +78,21 @@ class FloodFill:
                     feedback += "Filled " + str(next(cl for cl in self.colors if cl[0]==color))
             if self.checkWin():
                 self.game=False
-                feedback += '\nYou Win! \nPlay again? (Yes/No)'
+                feedback += '\nYou Win! \nPlay again? (Yes/No/Replay)'
             elif self.turn >= self.maxturn:
                 self.game=False
-                feedback += '\nOut of turns! \nPlay again? (Yes/No)'
+                feedback += '\nOut of turns! \nPlay again? (Yes/No/Replay)'
             return feedback
         else:
             if action in 'yes':
                 self.__init__()
             elif action in 'no':
                 exit()
+            elif action in 'replay':
+                self.replay = True
+                self.__init__()
             else:
-                return('Play again? (Yes/No)')
+                return('Play again? (Yes/No/Replay)')
 
     def popBoard(self):
         for x in range(self.size):
